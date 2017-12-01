@@ -1,5 +1,5 @@
 comparedElement :: (Num a) => [a] -> Int -> Int
-comparedElement list index = (index + 1) `mod` (length list)
+comparedElement list index = (index + (quot (length list) 2)) `mod` (length list)
 
 parseInput :: Char -> Int
 parseInput x = read [x] :: Int
