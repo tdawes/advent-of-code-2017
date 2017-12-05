@@ -1,21 +1,22 @@
-comparedElement :: (Num a) => [a] -> Int -> Int
-comparedElement list index = (index + (quot (length list) 2)) `mod` (length list)
-
-parseInput :: Char -> Int
-parseInput x = read [x] :: Int
-
 flatten :: [String] -> String
 flatten [] = ""
 flatten ([]:xss) = flatten xss
 flatten ((x:xs):xss) = [x] ++ flatten (xs:xss)
 
-listSum :: [Int] -> Int
-listSum [] = 0
-listSum (x:xs) = x + listSum xs
+parseInput :: Char -> Int
+parseInput x = read [x] :: Int
+
+rotate :: Int -> [a] -> [a]
+rotate _ [] = []
+rotate n list = drop m list ++ take m list
+  where m = n `mod` (length list)
 
 main = do
   numbers <- map parseInput <$> flatten <$> lines <$> getContents
 
-  let matched = [ if (numbers!!x == numbers!!(comparedElement numbers x)) then numbers!!x else 0 | x <- [0..((length numbers) - 1)] ]
+  -- Part A
+  print $ sum [ x | (x, y) <- zip numbers (rotate 1 numbers), x == y ]
 
-  print (listSum matched)
+  -- Part B
+  print $ sum [ x | (x, y) <- zip numbers (rotate (quot (length numbers) 2) numbers), x == y ]
+  
