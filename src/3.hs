@@ -27,8 +27,20 @@ getCoordinate i | i == s = c
 
 spiral = [ (i, getCoordinate i) | i <- [1..] ]
 
+neighbours :: Coord -> [Coord]
+neighbours (x, y) = [ (x + c, y + d) | c <- [-1..1], d <- [-1..1], c /= 0 || d /= 0 ]
+
+value :: Int -> Int
+value' 1 = 1
+value' x = sum [ value i | (i, n) <- take (x-1) spiral, elem n (neighbours $ getCoordinate x) ]
+value = memoize value'
+
 main = do
   input <- parseInput <$> getContents
+
   -- Part A
   let coord = getCoordinate input
   print $ (abs $ fst coord) + (abs $ snd coord)
+
+  -- Part B
+  print $ head [ v | x <- [1..], let v = value x, v >= input ]
