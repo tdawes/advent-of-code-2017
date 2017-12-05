@@ -1,11 +1,15 @@
 import qualified Data.Set as Set
 import Data.List
 
-isValid :: [[Char]] -> Bool
-isValid list = length list == length set
-  where set = Set.fromList $ map sort list
-
 main = do
   lines <- map words <$> lines <$> getContents
-  let validLines = [ line | line <- lines, isValid line ]
-  print $ length validLines
+
+  -- Part A
+  print $ length [ line | line <- lines,
+                          let set = Set.fromList line,
+                          length line == length set]
+
+  -- Part B
+  print $ length [ line | line <- lines,
+                          let set = Set.fromList $ map sort line,
+                          length line == length set]
