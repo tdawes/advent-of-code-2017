@@ -11,13 +11,22 @@ nextList list = [ y + s | (x, i) <- indexedList,
         indexedList = zip list [0..]
         (maxValue, maxIndex) = foldl1 (\(x, i) (y, j) -> if y > x then (y, j) else (x, i)) indexedList
 
-numSteps :: [Int] -> Int
+numSteps :: [Int] -> ([Int], Int)
 numSteps list = numSteps' list Set.empty 0
-  where numSteps' list existing steps | list `Set.member` existing = steps
+  where numSteps' list existing steps | list `Set.member` existing = (list, steps)
                                       | otherwise = numSteps' (nextList list) (Set.insert list existing) (steps + 1)
+
+numStepsUntil :: [Int] -> [Int] -> Int
+numStepsUntil end list = numStepsUntil' end list 0
+  where numStepsUntil' end list steps | end == list = steps
+                                      | otherwise = numStepsUntil' end (nextList list) (steps + 1)
 
 main = do
   input <- map parseInput <$> words <$> getContents
 
   -- Part A
-  print $ numSteps input
+  let (end, steps) = numSteps input
+  print steps
+
+  -- Part B
+  print $ steps - (numStepsUntil end input)
