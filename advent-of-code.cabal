@@ -5,7 +5,7 @@ homepage:            https://github.com/tdawes/advent-of-code-2017#readme
 license:             BSD3
 license-file:        LICENSE
 author:              Tom Dawes
-maintainer:          tomdawes91@gmail.com 
+maintainer:          tomdawes91@gmail.com
 copyright:           Tom Dawes
 category:            Web
 build-type:          Simple
