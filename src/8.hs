@@ -27,14 +27,20 @@ computeDelta :: [Char] -> Int -> Int
 computeDelta "inc" d = d
 computeDelta "dec" d = (-1) * d
 
-step :: M.Map Register Int -> Command -> M.Map Register Int
-step s (register, delta, command) | command s = (M.insert register ((getValue s register) + delta) s)
-                                  | otherwise = s
+step :: [M.Map Register Int] -> Command -> [M.Map Register Int]
+step (store:history) (register, delta, command) | command store = ((M.insert register ((getValue store register) + delta) store):store:history)
+                                                | otherwise = (store:store:history)
 
+safeMax :: (Ord a, Num a) => [a] -> a
+safeMax [] = 0
+safeMax xs = maximum xs
 
 main = do
   input <- map parseInput <$> map words <$> lines <$> getContents
+  let history = foldl step [M.empty] input
 
   -- Part A
-  let finalStore = foldl step M.empty input
-  print $ maximum $ map (\(register, value) -> value) $ M.toList finalStore
+  print $ safeMax $ map (\(register, value) -> value) $ M.toList $ head history
+
+  -- Part A
+  print $ safeMax $ map (safeMax . (map (\(register, value) -> value)) . M.toList) history
