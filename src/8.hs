@@ -6,13 +6,12 @@ parseInt :: [Char] -> Int
 parseInt x = read x :: Int
 
 getComparison :: [Char] -> Int -> Int -> Bool
-getComparison operator = compare
-  where compare a b | operator == "<" = a < b
-                    | operator == "<=" = a <= b
-                    | operator == ">" = a > b
-                    | operator == ">=" = a >= b
-                    | operator == "==" = a == b
-                    | operator == "!=" = a /= b
+getComparison "<" = (<)
+getComparison "<=" = (<=)
+getComparison ">" = (>)
+getComparison ">=" = (>=)
+getComparison "==" = (==)
+getComparison "!=" = (/=)
 
 getValue :: M.Map Register Int -> Register -> Int
 getValue m r | M.member r m = m M.! r
