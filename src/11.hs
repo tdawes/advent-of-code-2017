@@ -1,4 +1,5 @@
 import Data.String.Utils
+import Data.List (inits)
 
 horizontalDistance :: [[Char]] -> Int
 horizontalDistance dirs = abs $ sum $ map horiz dirs
@@ -24,3 +25,6 @@ main = do
 
   -- Part A
   print $ distance input
+
+  -- Part B
+  print $ maximum $ map distance $ inits input
