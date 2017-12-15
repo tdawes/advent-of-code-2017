@@ -2,6 +2,7 @@ import Data.Char (intToDigit)
 import Numeric (readHex, showIntAtBase)
 import Control.Monad.ST
 import Data.STRef
+import Control.Monad.Loops
 import Control.Monad
 
 parseInt :: [Char] -> Int
@@ -24,17 +25,26 @@ comp :: Int -> Int -> Bool
 comp x y = bits x == bits y
   where bits z = take 16 $ reverse $ fill 16 '0' $ showIntAtBase 2 intToDigit z ""
 
-countMatches :: Int -> Int -> Int -> Int
-countMatches n a b = runST $ do
+countMatches :: Int -> Int -> (Int -> Bool) -> Int -> (Int -> Bool) -> Int
+countMatches n a pa b pb = runST $ do
   c <- newSTRef 0
   stA <- newSTRef a
   stB <- newSTRef b
 
   forM_ [0..n] $ \_ -> do
+      iterateWhile (not . pa) (do
+                                aa <- hashA <$> readSTRef stA
+                                writeSTRef stA aa
+                                return aa
+                              )
+      iterateWhile (not . pb) (do
+                                bb <- hashB <$> readSTRef stB
+                                writeSTRef stB bb
+                                return bb
+                              )
+
       aa <- readSTRef stA
       bb <- readSTRef stB
-      writeSTRef stA $ hashA aa
-      writeSTRef stB $ hashB bb
       when (comp aa bb) $ do
         modifySTRef c (+1)
 
@@ -44,4 +54,7 @@ main = do
   [a, b] <- map parseInput <$> lines <$> getContents
 
   -- Part A
-  print $ countMatches 40000000 a b
+  print $ countMatches 40000000 a (\_ -> True) b (\_ -> True)
+
+  -- Part B
+  print $ countMatches 5000000 a (\x -> x `rem` 4 == 0) b (\x -> x `rem` 8 == 0)
