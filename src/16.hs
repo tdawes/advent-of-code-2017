@@ -24,8 +24,22 @@ parseInput ('p':r) = swapElem (head a) (head b)
   where [a,b] = split "/" r
 parseInput x = error x
 
+doTheDance :: [[Char] -> [Char]] -> [Char] -> [Char]
+doTheDance steps positions = foldl (\ps step -> step ps) positions steps
+
+doTheDanceUntilLoop :: [[Char] -> [Char]] -> [Char] -> [[Char]]
+doTheDanceUntilLoop steps start = dance steps [] start
+  where dance steps previous positions | positions `elem` previous = previous
+                                       | otherwise = dance steps (positions:previous) (doTheDance steps positions)
+
 main = do
   input <- map parseInput <$> split "," <$> head <$> lines <$> getContents
 
   -- Part A
-  print $ foldl (\ps step -> step ps) ['a'..'p'] input
+  let start = ['a'..'p']
+  let final = doTheDance input start
+  print final
+
+  -- Part B
+  let loop = doTheDanceUntilLoop input ['a'..'p']
+  print $ loop !! (length loop - 1 - (1000000000 `mod` (length loop)))
