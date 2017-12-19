@@ -39,17 +39,21 @@ nextPoint maze point direction | maze `at` straightOn /= ' ' = (straightOn, dire
         clockwise = point `move` (turnClockwise direction)
         anticlockwise = point `move` (turnAnticlockwise direction)
 
-getSequence :: Maze -> Coordinate -> [Char]
-getSequence maze entry = getSequence' maze (entry, D) []
-  where getSequence' maze (point, direction) sequence | current == ' ' = reverse sequence
-                                                      | current >= 'A' && current <= 'Z' = getSequence' maze next (current:sequence)
-                                                      | otherwise = getSequence' maze next sequence
+getSequence :: Maze -> Coordinate -> ([Char], Int)
+getSequence maze entry = getSequence' maze (entry, D) [] 0
+  where getSequence' maze (point, direction) sequence steps | current == ' ' = (reverse sequence, steps)
+                                                            | current >= 'A' && current <= 'Z' = getSequence' maze next (current:sequence) (steps + 1)
+                                                            | otherwise = getSequence' maze next sequence (steps + 1)
            where current = maze `at` point
                  next = nextPoint maze point direction
 
 main = do
   input <- lines <$> getContents
   let entry = findEntry input
+  let (message, steps) = getSequence input entry
 
   -- Part A
-  print $ getSequence input entry
+  print message
+
+  -- Print B
+  print steps
