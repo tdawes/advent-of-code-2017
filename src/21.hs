@@ -41,3 +41,6 @@ main = do
 
   -- Part A
   print $ sum $ map sum $ map (map (\x -> if x == '#' then 1 else 0)) $ (!!5) $ iterate (step input) initialPattern
+
+  -- Part B
+  print $ sum $ map sum $ map (map (\x -> if x == '#' then 1 else 0)) $ (!!18) $ iterate (step input) initialPattern
