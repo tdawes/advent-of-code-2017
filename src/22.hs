@@ -24,6 +24,9 @@ move (x, y) R = (x + 1, y)
 move (x, y) D = (x, y - 1)
 move (x, y) L = (x - 1, y)
 
+reverseDir :: Direction -> Direction
+reverseDir = turnLeft . turnLeft
+
 parseInput :: [[Char]] -> Grid
 parseInput grid = M.fromList $ concat $ map (\(y, row) -> map (\(x, cell) -> ((x, y), cell)) $ zip [(-w)..w] row ) $ zip (reverse [(-h)..h]) grid
   where h = (length grid - 1) `quot` 2
@@ -37,13 +40,23 @@ step :: State -> State
 step (State count pos dir grid) | safeGet pos grid == '.' = State (count + 1) (move pos $ turnLeft dir) (turnLeft dir) (M.insert pos '#' grid)
                                 | otherwise = State count (move pos $ turnRight dir) (turnRight dir) (M.insert pos '.' grid)
 
-numBursts :: Int -> Grid -> Int
-numBursts count initialGrid = finalCount
+step' :: State -> State
+step' (State count pos dir grid) | current == '.' = State count (move pos $ turnLeft dir) (turnLeft dir) (M.insert pos 'W' grid)
+                                 | current == 'W' = State (count + 1) (move pos dir) dir (M.insert pos '#' grid)
+                                 | current == '#' = State count (move pos $ turnRight dir) (turnRight dir) (M.insert pos 'F' grid)
+                                 | otherwise = State count (move pos $ reverseDir dir) (reverseDir dir) (M.insert pos '.' grid)
+  where current = safeGet pos grid
+
+numBursts :: Int -> Grid -> (State -> State) -> Int
+numBursts count initialGrid runStep = finalCount
   where initialState = State 0 (0, 0) U initialGrid
-        (State finalCount _ _ _) = foldl (\x _ -> step x) initialState [1..count]
+        (State finalCount _ _ _) = foldl (\x _ -> runStep x) initialState [1..count]
 
 main = do
   input <- parseInput <$> lines <$> getContents
 
   -- Part A
-  print $ numBursts 10000 input
+  print $ numBursts 10000 input step
+
+  -- Part B
+  print $ numBursts 10000000 input step'
