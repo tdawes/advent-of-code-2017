@@ -1,5 +1,6 @@
 import qualified Data.Map as M
 import Data.Maybe (fromJust)
+import Data.Numbers.Primes (isPrime)
 
 -- (Register, Position, Count)
 type Context = (M.Map [Char] Int, Int, Int)
@@ -33,3 +34,8 @@ main = do
   -- Part A
   let (_, _, count) = run input (M.empty, 0, 0)
   print count
+
+  -- Part B
+  let b = (79 * 100) + 100000
+  let c = b + 17000
+  print $ foldl (\count n -> if isPrime (b + (17 * n)) then count else count + 1) 0 [0..1000]
