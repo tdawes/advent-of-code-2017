@@ -22,6 +22,10 @@ construct ps existing = existing:(concat [ construct (delete (p, q) ps) (y:x:exi
 
 main = do
   input <- map parseInput <$> map (split "/") <$> lines <$> getContents
+  let bridges = allBridges input
 
   -- Part A
-  print $ maximum $ map sum $ allBridges input
+  print $ maximum $ map sum bridges
+
+  -- Part B
+  print $ sum $ maximumBy (\x y -> compare (length x) (length y)) $ bridges
